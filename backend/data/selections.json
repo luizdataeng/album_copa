@@ -25,7 +25,7 @@
   { "name": "54 | TUN [Tunisia]", "group": "F" },
   { "name": "58 | BEL [Belgium]", "group": "G" },
   { "name": "60 | EGY [Egypt]", "group": "G" },
-  { "name": "62 | IRN [IR Iran]", "group": "G" },
+  { "name": "62 | IRN [Iran]", "group": "G" },
   { "name": "64 | New Zealand [NZL]", "group": "G" },
   { "name": "66 | Spain [ESP]", "group": "H" },
   { "name": "68 | Cabo Verde [CPV]", "group": "H" },
@@ -46,5 +46,8 @@
   { "name": "98 | England [ENG]", "group": "L" },
   { "name": "100 | Croatia [CRO]", "group": "L" },
   { "name": "102 | Ghana [GHA]", "group": "L" },
-  { "name": "104 | Panama [PAN]", "group": "L" }
+  { "name": "104 | Panama [PAN]", "group": "L" },
+  { "name": "1 | Fifa World Cup 2026 [FWC]", "group": "_FWC" },
+  { "name": "106 | Fifa World Cup 2026 [FWC]", "group": "_FWC" },
+  { "name": "112 | Coca-Cola 2026 [CC]", "group": "_CC" }
 ]

@@ -1,4 +1,4 @@
-const CACHE_NAME = "album-cache-v14";
+const CACHE_NAME = "album-cache-v17";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
@@ -25,10 +25,36 @@ const STATIC_ASSETS = [
   "/static/flags/cote.png",
   "/static/flags/ecuador.png",
   "/static/flags/germany.png",
+  "/static/flags/coca_cola.png",
+  "/static/flags/fwc.png",
+  "/static/flags/ghana.png",
+  "/static/flags/iraq.png",
+  "/static/flags/iran.png",
   "/static/flags/japan.png",
+  "/static/flags/jordan.png",
+  "/static/flags/norway.png",
+  "/static/flags/panama.png",
+  "/static/flags/portugal.png",
+  "/static/flags/saudi_arabia.png",
+  "/static/flags/senegal.png",
+  "/static/flags/spain.png",
   "/static/flags/netherlands.png",
+  "/static/flags/new_zealand.png",
   "/static/flags/sweden.png",
   "/static/flags/tunisia.png",
+  "/static/flags/belgium.png",
+  "/static/flags/egypt.png",
+  "/static/flags/france.png",
+  "/static/flags/argentina.png",
+  "/static/flags/algeria.png",
+  "/static/flags/austria.png",
+  "/static/flags/cabo_verde.png",
+  "/static/flags/colombia.png",
+  "/static/flags/congo.png",
+  "/static/flags/croatia.png",
+  "/static/flags/england.png",
+  "/static/flags/uruguay.png",
+  "/static/flags/uzbekistan.png",
   "/static/icons/icon.svg"
 ];
 

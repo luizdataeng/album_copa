@@ -43,11 +43,20 @@ def seed_db(selections: List[Dict], tamanho: int = 20) -> int:
         return 0
     rows = []
     group_rows = []
+    range_rows = []
     for selecao in selections:
         name = selecao["name"]
         group = selecao.get("group") or "Sem grupo"
+        start = int(selecao.get("start") or 1)
+        end = selecao.get("end")
+        if end is None:
+            size = int(selecao.get("size") or tamanho)
+            end = start + size - 1
+        else:
+            end = int(end)
         group_rows.append((group, name))
-        for numero in range(1, tamanho + 1):
+        range_rows.append((name, start, end))
+        for numero in range(start, end + 1):
             rows.append((name, group, numero, 0))
     with get_connection() as conn:
         conn.executemany(
@@ -64,6 +73,13 @@ def seed_db(selections: List[Dict], tamanho: int = 20) -> int:
             WHERE selecao = ?
             """,
             group_rows,
+        )
+        conn.executemany(
+            """
+            DELETE FROM album
+            WHERE selecao = ? AND (numero_figurinha < ? OR numero_figurinha > ?)
+            """,
+            range_rows,
         )
         conn.commit()
         return conn.total_changes

@@ -20,14 +20,36 @@ def load_selections(path: Path) -> list:
         if isinstance(item, str):
             name = item.strip()
             group = "Sem grupo"
+            size = None
         elif isinstance(item, dict):
             name = str(item.get("name", "")).strip()
             group = str(item.get("group", "Sem grupo")).strip() or "Sem grupo"
+            size = item.get("size")
         else:
             continue
 
         if name:
-            selections.append({"name": name, "group": group})
+            lower_name = name.lower()
+            prefix = name.split("|", 1)[0].strip()
+            entry_start = None
+            entry_end = None
+            if "[cc]" in lower_name:
+                entry_start = 1
+                entry_end = 14
+            if "[fwc]" in lower_name:
+                if prefix.isdigit() and int(prefix) == 1:
+                    entry_start = 1
+                    entry_end = 8
+                elif prefix.isdigit() and int(prefix) == 106:
+                    entry_start = 9
+                    entry_end = 19
+            entry = {"name": name, "group": group}
+            if entry_start is not None and entry_end is not None:
+                entry["start"] = entry_start
+                entry["end"] = entry_end
+            if size:
+                entry["size"] = size
+            selections.append(entry)
 
     return selections
 

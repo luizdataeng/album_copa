@@ -19,6 +19,8 @@ function getGroup(selection) {
 }
 
 function formatGroupLabel(group) {
+  if (group === "_CC") return "Coca-Cola";
+  if (group === "_FWC") return "FIFA";
   return group === "Sem grupo" ? "Sem grupo" : `Grupo ${group}`;
 }
 
@@ -78,6 +80,12 @@ function getFlagPath(selection) {
   if (name.includes("[civ]") || name.includes("cote") || name.includes("côte")) {
     return "/static/flags/cote.png";
   }
+  if (name.includes("[fwc]") || name.includes("fifa world cup")) {
+    return "/static/flags/fwc.png";
+  }
+  if (name.includes("[cc]") || name.includes("coca-cola") || name.includes("coca cola")) {
+    return "/static/flags/coca_cola.png";
+  }
   if (name.includes("[ecu]") || name.includes("ecuador")) {
     return "/static/flags/ecuador.png";
   }
@@ -95,6 +103,78 @@ function getFlagPath(selection) {
   }
   if (name.includes("[tun]") || name.includes("tunisia")) {
     return "/static/flags/tunisia.png";
+  }
+  if (name.includes("[bel]") || name.includes("belgium")) {
+    return "/static/flags/belgium.png";
+  }
+  if (name.includes("[egy]") || name.includes("egypt")) {
+    return "/static/flags/egypt.png";
+  }
+  if (name.includes("[irn]") || name.includes("iran")) {
+    return "/static/flags/iran.png";
+  }
+  if (name.includes("[nzl]") || name.includes("new zealand")) {
+    return "/static/flags/new_zealand.png";
+  }
+  if (name.includes("[esp]") || name.includes("spain")) {
+    return "/static/flags/spain.png";
+  }
+  if (name.includes("[cpv]") || name.includes("cabo verde") || name.includes("cape verde")) {
+    return "/static/flags/cabo_verde.png";
+  }
+  if (name.includes("[ksa]") || name.includes("saudi")) {
+    return "/static/flags/saudi_arabia.png";
+  }
+  if (name.includes("[uru]") || name.includes("uruguay")) {
+    return "/static/flags/uruguay.png";
+  }
+  if (name.includes("[fra]") || name.includes("france")) {
+    return "/static/flags/france.png";
+  }
+  if (name.includes("[sen]") || name.includes("senegal")) {
+    return "/static/flags/senegal.png";
+  }
+  if (name.includes("[irq]") || name.includes("iraq")) {
+    return "/static/flags/iraq.png";
+  }
+  if (name.includes("[nor]") || name.includes("norway")) {
+    return "/static/flags/norway.png";
+  }
+  if (name.includes("[arg]") || name.includes("argentina")) {
+    return "/static/flags/argentina.png";
+  }
+  if (name.includes("[alg]") || name.includes("algeria")) {
+    return "/static/flags/algeria.png";
+  }
+  if (name.includes("[aut]") || name.includes("austria")) {
+    return "/static/flags/austria.png";
+  }
+  if (name.includes("[jor]") || name.includes("jordan")) {
+    return "/static/flags/jordan.png";
+  }
+  if (name.includes("[por]") || name.includes("portugal")) {
+    return "/static/flags/portugal.png";
+  }
+  if (name.includes("[cod]") || name.includes("congo")) {
+    return "/static/flags/congo.png";
+  }
+  if (name.includes("[uzb]") || name.includes("uzbekistan")) {
+    return "/static/flags/uzbekistan.png";
+  }
+  if (name.includes("[col]") || name.includes("colombia")) {
+    return "/static/flags/colombia.png";
+  }
+  if (name.includes("[eng]") || name.includes("england")) {
+    return "/static/flags/england.png";
+  }
+  if (name.includes("[cro]") || name.includes("croatia")) {
+    return "/static/flags/croatia.png";
+  }
+  if (name.includes("[gha]") || name.includes("ghana")) {
+    return "/static/flags/ghana.png";
+  }
+  if (name.includes("[pan]") || name.includes("panama")) {
+    return "/static/flags/panama.png";
   }
   return "/static/flags/placeholder.png";
 }

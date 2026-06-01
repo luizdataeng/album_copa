@@ -1,10 +1,11 @@
 import json
+import os
 import sqlite3
 from pathlib import Path
 from typing import Dict, List
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "album.sqlite3"
+DB_PATH = Path(os.getenv("ALBUM_DB_PATH", BASE_DIR / "album.sqlite3"))
 SELECTIONS_PATH = BASE_DIR / "data" / "selections.json"
 
 

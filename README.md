@@ -24,6 +24,18 @@ App PWA para controle rapido de figurinhas com FastAPI + SQLite e frontend em HT
 
 A aplicacao estara disponivel em `http://localhost:8000`.
 
+## Deploy no Render (Web Service)
+
+1. Suba este repo no GitHub.
+2. No Render, crie um Web Service e conecte ao repo.
+3. O arquivo `render.yaml` ja contem os comandos de build e start.
+4. O banco SQLite fica persistido no disco do Render.
+
+Comandos usados:
+
+- Build: `pip install -r backend/requirements.txt`
+- Start: `python backend/seed.py && python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+
 ## Notas
 
 - O icone PWA ainda e um placeholder. Substitua em `frontend/icons/icon.svg`.

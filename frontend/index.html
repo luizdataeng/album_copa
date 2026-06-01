@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Album de Figurinhas</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen text-slate-900">
+    <div class="app-shell">
+      <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm uppercase tracking-[0.3em] text-slate-600">PWA Album</p>
+          <h1 class="text-3xl font-semibold">Controle de Figurinhas</h1>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="chip" data-view="missing">Faltam</button>
+          <button class="chip" data-view="repeated">Repetidas</button>
+          <button class="chip" data-view="home">Selecoes</button>
+        </div>
+      </header>
+
+      <section class="panel" id="filters"></section>
+
+      <main id="app" class="mt-6"></main>
+    </div>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <h2 class="text-xl font-semibold">Nova Selecao</h2>
+        <p class="text-sm text-slate-600">
+          Digite o nome. Serão criadas 20 figurinhas zeradas.
+        </p>
+        <input
+          id="modal-input"
+          class="modal-input"
+          type="text"
+          placeholder="Ex: Canada"
+        />
+        <div class="modal-actions">
+          <button id="modal-cancel" class="btn-ghost">Cancelar</button>
+          <button id="modal-save" class="btn-primary">Criar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

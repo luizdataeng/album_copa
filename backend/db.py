@@ -1,9 +1,11 @@
+import json
 import sqlite3
 from pathlib import Path
 from typing import Dict, List
 
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "album.sqlite3"
+SELECTIONS_PATH = BASE_DIR / "data" / "selections.json"
 
 
 def get_connection() -> sqlite3.Connection:
@@ -83,6 +85,26 @@ def prune_selections(names: List[str]) -> int:
         return conn.total_changes
 
 
+def load_selection_order() -> List[str]:
+    if not SELECTIONS_PATH.exists():
+        return []
+    with SELECTIONS_PATH.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    if not isinstance(data, list):
+        return []
+    order = []
+    for item in data:
+        if isinstance(item, dict):
+            name = str(item.get("name", "")).strip()
+        elif isinstance(item, str):
+            name = item.strip()
+        else:
+            name = ""
+        if name:
+            order.append(name)
+    return order
+
+
 def fetch_album() -> List[Dict]:
     with get_connection() as conn:
         rows = conn.execute(
@@ -103,7 +125,17 @@ def fetch_album() -> List[Dict]:
             {"number": row["numero_figurinha"], "quantity": row["quantidade"]}
         )
 
-    return list(selections_map.values())
+    order = load_selection_order()
+    order_index = {name: idx for idx, name in enumerate(order)}
+    ordered = [selections_map[name] for name in order if name in selections_map]
+    extras = [
+        item
+        for name, item in selections_map.items()
+        if name not in order_index
+    ]
+    extras.sort(key=lambda item: item["name"])
+
+    return ordered + extras
 
 
 def update_quantity(selecao: str, numero: int, delta: int) -> int:

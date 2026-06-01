@@ -296,11 +296,12 @@ function renderSelection() {
 
   appEl.innerHTML = `
     <section class="card">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center selection-header">
         <div>
           <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Selecao</p>
           <h2 class="text-2xl font-semibold">${selection.name}</h2>
         </div>
+        <img class="selection-flag-detail" src="${getFlagPath(selection)}" alt="" />
         <button class="btn-ghost" id="back-home">Voltar</button>
       </div>
       <div class="mt-6 sticker-grid">
@@ -368,13 +369,19 @@ function renderListView(type) {
       const items = type === "missing" ? group.missing : group.repeated;
       if (items.length === 0) return "";
 
+      const selection = baseSelections.find((item) => item.name === group.name);
+      const flagPath = selection ? getFlagPath(selection) : getFlagPath({ name: group.name });
+
       const chips = items
         .map((item) => `<span class="chip">${item.number}</span>`)
         .join("");
 
       return `
-        <div class="card">
-          <h3 class="text-lg font-semibold">${group.name}</h3>
+        <div class="card list-card">
+          <div class="list-card-header">
+            <h3 class="text-lg font-semibold">${group.name}</h3>
+            <img class="list-flag" src="${flagPath}" alt="" />
+          </div>
           <div class="mt-3 flex flex-wrap gap-2">${chips}</div>
         </div>
       `;

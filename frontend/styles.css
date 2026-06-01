@@ -93,6 +93,25 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.selection-header {
+  gap: 8px;
+}
+
+.list-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.list-flag {
+  width: 64px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.18);
+}
+
 .selection-item {
   display: flex;
   flex-direction: column;
@@ -116,6 +135,15 @@ body {
   height: 100%;
   object-fit: cover;
   filter: saturate(1.1) brightness(0.95);
+}
+
+.selection-flag-detail {
+  width: 84px;
+  height: 52px;
+  margin-left: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.18);
 }
 
 .selection-title {

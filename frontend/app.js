@@ -173,6 +173,11 @@ function ownedCount(selection) {
   return selection.stickers.filter((item) => item.quantity > 0).length;
 }
 
+function filterByGroup(selections) {
+  if (state.filter === "Todas") return selections;
+  return selections.filter((selection) => getGroup(selection) === state.filter);
+}
+
 function missingList() {
   return state.selections.map((selection) => ({
     name: selection.name,
@@ -188,10 +193,7 @@ function repeatedList() {
 }
 
 function renderHome() {
-  const filtered = state.selections.filter((selection) => {
-    if (state.filter === "Todas") return true;
-    return getGroup(selection) === state.filter;
-  });
+  const filtered = filterByGroup(state.selections);
 
   const grouped = {};
   filtered.forEach((selection) => {
@@ -348,7 +350,17 @@ function renderSelection() {
 }
 
 function renderListView(type) {
-  const groups = type === "missing" ? missingList() : repeatedList();
+  const baseSelections = filterByGroup(state.selections);
+  const groups =
+    type === "missing"
+      ? baseSelections.map((selection) => ({
+          name: selection.name,
+          missing: selection.stickers.filter((item) => item.quantity === 0),
+        }))
+      : baseSelections.map((selection) => ({
+          name: selection.name,
+          repeated: selection.stickers.filter((item) => item.quantity >= 2),
+        }));
   const title = type === "missing" ? "Faltam" : "Repetidas";
 
   const content = groups
@@ -388,7 +400,11 @@ function renderListView(type) {
 }
 
 function render() {
-  filterBar.classList.toggle("hidden", state.view !== "home");
+  const showFilters = state.view !== "selection";
+  filterBar.classList.toggle("hidden", !showFilters);
+  if (showFilters) {
+    renderFilters();
+  }
 
   if (state.view === "selection") {
     renderSelection();

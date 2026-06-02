@@ -17,6 +17,11 @@ const appEl = document.getElementById("app");
 const filterBar = document.getElementById("filters");
 const modalEl = document.getElementById("modal");
 const modalInput = document.getElementById("modal-input");
+const tokenModalEl = document.getElementById("token-modal");
+const tokenInput = document.getElementById("token-input");
+const tokenCancel = document.getElementById("token-cancel");
+const tokenSave = document.getElementById("token-save");
+let tokenRequest = null;
 
 function getGroup(selection) {
   return selection.group || "Sem grupo";
@@ -187,15 +192,65 @@ function cacheAlbum() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.selections));
 }
 
-function getAdminToken() {
-  let token = localStorage.getItem(ADMIN_TOKEN_KEY);
-  if (!token) {
-    token = window.prompt("Informe o token de admin");
-    if (token) {
-      localStorage.setItem(ADMIN_TOKEN_KEY, token);
-    }
-  }
-  return token;
+function requestAdminToken() {
+  if (tokenRequest) return tokenRequest;
+
+  tokenRequest = new Promise((resolve) => {
+    const cleanup = () => {
+      tokenCancel.removeEventListener("click", onCancel);
+      tokenSave.removeEventListener("click", onSave);
+      tokenInput.removeEventListener("keydown", onKeydown);
+      tokenModalEl.removeEventListener("click", onBackdropClick);
+      tokenRequest = null;
+    };
+
+    const closeModal = (value) => {
+      tokenModalEl.classList.add("hidden");
+      tokenInput.value = "";
+      cleanup();
+      resolve(value);
+    };
+
+    const onSave = () => {
+      const token = tokenInput.value.trim();
+      if (token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+        closeModal(token);
+        return;
+      }
+      closeModal(null);
+    };
+
+    const onCancel = () => closeModal(null);
+
+    const onKeydown = (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        onSave();
+      }
+    };
+
+    const onBackdropClick = (event) => {
+      if (event.target === tokenModalEl) {
+        onCancel();
+      }
+    };
+
+    tokenCancel.addEventListener("click", onCancel);
+    tokenSave.addEventListener("click", onSave);
+    tokenInput.addEventListener("keydown", onKeydown);
+    tokenModalEl.addEventListener("click", onBackdropClick);
+    tokenModalEl.classList.remove("hidden");
+    tokenInput.focus();
+  });
+
+  return tokenRequest;
+}
+
+async function getAdminToken() {
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  if (token) return token;
+  return requestAdminToken();
 }
 
 function handleAuthError() {
@@ -229,7 +284,7 @@ async function fetchAlbum() {
 }
 
 async function updateSticker(selecao, number, delta) {
-  const token = getAdminToken();
+  const token = await getAdminToken();
   if (!token) return;
   const selection = state.selections.find((item) => item.name === selecao);
   if (!selection) return;
@@ -265,7 +320,7 @@ async function updateSticker(selecao, number, delta) {
 
 async function createSelection(name) {
   if (!name) return;
-  const token = getAdminToken();
+  const token = await getAdminToken();
   if (!token) return;
   try {
     const response = await fetch(`${API_BASE}/selecoes/nova`, {

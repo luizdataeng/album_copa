@@ -48,6 +48,26 @@
       </div>
     </div>
 
+    <div id="token-modal" class="modal hidden">
+      <div class="modal-card">
+        <h2 class="text-xl font-semibold">Token de Admin</h2>
+        <p class="text-sm text-slate-600">
+          Informe o token para liberar alteracoes.
+        </p>
+        <input
+          id="token-input"
+          class="modal-input"
+          type="password"
+          placeholder="Token"
+          autocomplete="current-password"
+        />
+        <div class="modal-actions">
+          <button id="token-cancel" class="btn-ghost">Cancelar</button>
+          <button id="token-save" class="btn-primary">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <script src="/static/app.js"></script>
   </body>
 </html>

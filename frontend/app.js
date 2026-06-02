@@ -6,6 +6,9 @@ const state = {
   selections: [],
   view: "home",
   filter: "Todas",
+  alphaFilter: "Todos",
+  searchQuery: "",
+  showAlpha: false,
   current: null,
 };
 
@@ -258,6 +261,49 @@ function filterByGroup(selections) {
   return selections.filter((selection) => getGroup(selection) === state.filter);
 }
 
+function normalizeText(value) {
+  return value
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+}
+
+function alphaKey(name) {
+  const normalized = normalizeText(name);
+  const match = normalized.match(/[A-Z]/);
+  return match ? match[0] : "";
+}
+
+function filterByAlphaAndSearch(selections) {
+  let filtered = selections;
+
+  if (state.alphaFilter !== "Todos") {
+    filtered = filtered.filter(
+      (selection) => alphaKey(selection.name) === state.alphaFilter
+    );
+  }
+
+  const query = state.searchQuery.trim();
+  if (query) {
+    const normalizedQuery = normalizeText(query);
+    filtered = filtered.filter((selection) =>
+      normalizeText(selection.name).includes(normalizedQuery)
+    );
+  }
+
+  return filtered;
+}
+
+function escapeHtml(value) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function missingList() {
   return state.selections.map((selection) => ({
     name: selection.name,
@@ -273,7 +319,7 @@ function repeatedList() {
 }
 
 function renderHome() {
-  const filtered = filterByGroup(state.selections);
+  const filtered = filterByAlphaAndSearch(filterByGroup(state.selections));
 
   const grouped = {};
   filtered.forEach((selection) => {
@@ -426,7 +472,7 @@ function renderSelection() {
 }
 
 function renderListView(type) {
-  const baseSelections = filterByGroup(state.selections);
+  const baseSelections = filterByAlphaAndSearch(filterByGroup(state.selections));
   const groups =
     type === "missing"
       ? baseSelections.map((selection) => ({
@@ -511,12 +557,17 @@ function renderFilters() {
     new Set(state.selections.map((selection) => getGroup(selection)))
   ).sort();
   const options = ["Todas", ...groups];
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   if (!options.includes(state.filter)) {
     state.filter = "Todas";
   }
 
-  filterBar.innerHTML = options
+  if (state.alphaFilter !== "Todos" && !alphabet.includes(state.alphaFilter)) {
+    state.alphaFilter = "Todos";
+  }
+
+  const filterButtons = options
     .map(
       (option) =>
         `<button class="filter" data-filter="${option}">${
@@ -524,6 +575,45 @@ function renderFilters() {
         }</button>`
     )
     .join("");
+
+  const alphaButtons = alphabet
+    .map(
+      (letter) =>
+        `<button class="az-letter" data-alpha="${letter}">${letter}</button>`
+    )
+    .join("");
+
+  const alphaControls = state.showAlpha
+    ? `
+      <div class="az-controls">
+        <div class="az-row">
+          <button class="az-letter" data-alpha="Todos">Todos</button>
+          ${alphaButtons}
+        </div>
+        <div class="az-search">
+          <input
+            id="selection-search"
+            class="search-input"
+            type="text"
+            placeholder="Pesquisar selecao"
+            value="${escapeHtml(state.searchQuery)}
+          />
+          ${
+            state.searchQuery.trim()
+              ? `<button id="search-clear" class="btn-ghost btn-compact" type="button">Limpar</button>`
+              : ""
+          }
+        </div>
+      </div>
+    `
+    : "";
+
+  filterBar.innerHTML = `
+    <div class="filter-row">
+      ${filterButtons}
+    </div>
+    ${alphaControls}
+  `;
 
   document.querySelectorAll("[data-filter]").forEach((button) => {
     if (button.dataset.filter === state.filter) {
@@ -535,6 +625,50 @@ function renderFilters() {
       render();
     });
   });
+
+  document.querySelectorAll("[data-alpha]").forEach((button) => {
+    if (button.dataset.alpha === state.alphaFilter) {
+      button.classList.add("active");
+    }
+    button.addEventListener("click", () => {
+      state.alphaFilter = button.dataset.alpha;
+      render();
+    });
+  });
+
+  const searchInput = document.getElementById("selection-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const keepFocus = document.activeElement === searchInput;
+      state.searchQuery = searchInput.value;
+      render();
+      if (keepFocus) {
+        const refreshed = document.getElementById("selection-search");
+        if (refreshed) {
+          const length = refreshed.value.length;
+          refreshed.focus();
+          refreshed.setSelectionRange(length, length);
+        }
+      }
+    });
+  }
+
+  const clearButton = document.getElementById("search-clear");
+  if (clearButton) {
+    clearButton.addEventListener("click", () => {
+      state.searchQuery = "";
+      render();
+      const refreshed = document.getElementById("selection-search");
+      if (refreshed) {
+        refreshed.focus();
+      }
+    });
+  }
+
+  const azToggle = document.getElementById("az-toggle");
+  if (azToggle) {
+    azToggle.classList.toggle("active", state.showAlpha);
+  }
 }
 
 function wireEvents() {
@@ -544,6 +678,24 @@ function wireEvents() {
       render();
     });
   });
+
+  const azToggle = document.getElementById("az-toggle");
+  if (azToggle) {
+    azToggle.addEventListener("click", () => {
+      state.showAlpha = !state.showAlpha;
+      if (!state.showAlpha) {
+        state.alphaFilter = "Todos";
+        state.searchQuery = "";
+      }
+      render();
+      if (state.showAlpha) {
+        const searchInput = document.getElementById("selection-search");
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    });
+  }
 
   document.getElementById("modal-cancel").addEventListener("click", () => {
     modalEl.classList.add("hidden");

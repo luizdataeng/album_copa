@@ -24,9 +24,15 @@ body {
 
 .panel {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.filter-row {
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 24px;
 }
 
 .chip {
@@ -35,6 +41,11 @@ body {
   background: rgba(31, 41, 55, 0.08);
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chip.active {
+  background: var(--accent);
+  color: white;
 }
 
 .chip:hover {
@@ -52,6 +63,54 @@ body {
 .filter.active {
   background: var(--accent);
   color: white;
+}
+
+.az-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.az-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.az-letter {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 700;
+  background: rgba(15, 118, 110, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.az-letter.active {
+  background: var(--accent-2);
+  color: white;
+}
+
+.az-letter:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.az-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-input {
+  min-width: min(320px, 100%);
+  flex: 1 1 220px;
+  border: 1px solid rgba(31, 41, 55, 0.2);
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+
+.btn-compact {
+  padding: 6px 10px;
+  border-radius: 999px;
 }
 
 .grid {

@@ -30,6 +30,7 @@ A aplicacao estara disponivel em `http://localhost:8000`.
 2. No Render, crie um Web Service e conecte ao repo.
 3. O arquivo `render.yaml` ja contem os comandos de build e start.
 4. O banco SQLite fica persistido no disco do Render.
+5. Configure a env var `ADMIN_TOKEN` no Render para habilitar alteracoes protegidas.
 
 Comandos usados:
 

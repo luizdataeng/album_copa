@@ -1,5 +1,6 @@
 const API_BASE = "";
 const STORAGE_KEY = "album-cache-v1";
+const ADMIN_TOKEN_KEY = "album-admin-token";
 const HOLD_MS = 450;
 
 const state = {
@@ -186,6 +187,22 @@ function cacheAlbum() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.selections));
 }
 
+function getAdminToken() {
+  let token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) {
+    token = window.prompt("Informe o token de admin");
+    if (token) {
+      localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    }
+  }
+  return token;
+}
+
+function handleAuthError() {
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
+  window.alert("Token invalido. Informe novamente.");
+}
+
 function loadCachedAlbum() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
@@ -212,6 +229,8 @@ async function fetchAlbum() {
 }
 
 async function updateSticker(selecao, number, delta) {
+  const token = getAdminToken();
+  if (!token) return;
   const selection = state.selections.find((item) => item.name === selecao);
   if (!selection) return;
   const sticker = selection.stickers.find((item) => item.number === number);
@@ -224,9 +243,16 @@ async function updateSticker(selecao, number, delta) {
   try {
     const response = await fetch(`${API_BASE}/atualizar`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-ADMIN-TOKEN": token,
+      },
       body: JSON.stringify({ selecao, numero: number, delta }),
     });
+    if (response.status === 401 || response.status === 500) {
+      handleAuthError();
+      throw new Error("Unauthorized");
+    }
     if (!response.ok) throw new Error("Update failed");
     const payload = await response.json();
     sticker.quantity = payload.quantity;
@@ -239,12 +265,21 @@ async function updateSticker(selecao, number, delta) {
 
 async function createSelection(name) {
   if (!name) return;
+  const token = getAdminToken();
+  if (!token) return;
   try {
     const response = await fetch(`${API_BASE}/selecoes/nova`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-ADMIN-TOKEN": token,
+      },
       body: JSON.stringify({ name }),
     });
+    if (response.status === 401 || response.status === 500) {
+      handleAuthError();
+      throw new Error("Unauthorized");
+    }
     if (!response.ok) throw new Error("Create failed");
     await fetchAlbum();
   } catch (error) {
@@ -608,10 +643,16 @@ function renderFilters() {
     `
     : "";
 
+  const groupControls = state.showAlpha
+    ? ""
+    : `
+      <div class="filter-row">
+        ${filterButtons}
+      </div>
+    `;
+
   filterBar.innerHTML = `
-    <div class="filter-row">
-      ${filterButtons}
-    </div>
+    ${groupControls}
     ${alphaControls}
   `;
 
@@ -675,6 +716,11 @@ function wireEvents() {
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => {
       state.view = button.dataset.view;
+      if (state.view === "home") {
+        state.showAlpha = false;
+        state.alphaFilter = "Todos";
+        state.searchQuery = "";
+      }
       render();
     });
   });

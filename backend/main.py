@@ -1,6 +1,8 @@
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+import os
+
+from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -58,8 +60,23 @@ def get_album() -> dict:
     return {"selections": db.fetch_album()}
 
 
+def require_admin_token(admin_token: str | None = Header(default=None, alias="X-ADMIN-TOKEN")) -> None:
+    expected = os.getenv("ADMIN_TOKEN")
+    if not expected:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="ADMIN_TOKEN not configured",
+        )
+    if admin_token != expected:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid admin token",
+        )
+
+
 @app.post("/atualizar")
 def update_sticker(payload: UpdatePayload) -> dict:
+    require_admin_token()
     try:
         quantity = db.update_quantity(payload.selecao, payload.numero, payload.delta)
     except ValueError as exc:
@@ -74,6 +91,7 @@ def update_sticker(payload: UpdatePayload) -> dict:
 
 @app.post("/selecoes/nova")
 def create_selection(payload: NewSelectionPayload) -> dict:
+    require_admin_token()
     group = payload.group or "Custom"
     changes = db.create_selection(payload.name, group)
     if changes == 0:

@@ -5,10 +5,4 @@ services:
     plan: free
     buildCommand: pip install -r backend/requirements.txt
     startCommand: if [ "${RUN_SEED}" = "1" ]; then python backend/seed.py; fi && python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: ALBUM_DB_PATH
-        value: /opt/render/project/data/album.sqlite3
-    disk:
-      name: album-data
-      mountPath: /opt/render/project/data
-      sizeGB: 1
+    envVars: []

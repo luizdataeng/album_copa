@@ -29,13 +29,19 @@ A aplicacao estara disponivel em `http://localhost:8000`.
 1. Suba este repo no GitHub.
 2. No Render, crie um Web Service e conecte ao repo.
 3. O arquivo `render.yaml` ja contem os comandos de build e start.
-4. O banco SQLite fica persistido no disco do Render.
+4. Configure a env var `DATABASE_URL` (Postgres) no Render.
 5. Configure a env var `ADMIN_TOKEN` no Render para habilitar alteracoes protegidas.
 
 Comandos usados:
 
 - Build: `pip install -r backend/requirements.txt`
 - Start: `python backend/seed.py && python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+
+## Banco de dados
+
+- Postgres: defina `DATABASE_URL` (preferido para deploy).
+- SQLite: use `ALBUM_DB_PATH` para apontar um arquivo local.
+- O seed so roda se a tabela estiver vazia (seguro para re-deploys).
 
 ## Notas
 

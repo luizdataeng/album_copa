@@ -59,6 +59,9 @@ def main() -> None:
     if not selections:
         raise ValueError("Selections list is empty")
     db.init_db()
+    if db.has_data():
+        print("Seed skipped: album already has data")
+        return
     names = [item["name"] for item in selections]
     removed = db.prune_selections(names)
     total = db.seed_db(selections)

@@ -1,4 +1,4 @@
-const CACHE_NAME = "album-cache-v20";
+const CACHE_NAME = "album-cache-v21";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",

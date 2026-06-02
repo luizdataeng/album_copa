@@ -408,6 +408,52 @@ function repeatedList() {
   }));
 }
 
+function computeStats(selections) {
+  const stickers = selections.flatMap((selection) => selection.stickers);
+  const total = stickers.length;
+  const unique = stickers.filter((item) => item.quantity > 0).length;
+  const repeated = stickers.filter((item) => item.quantity >= 2).length;
+  const percent = total === 0 ? 0 : Math.round((unique / total) * 100);
+  return { total, unique, repeated, percent };
+}
+
+function renderStats() {
+  const filtered = filterByAlphaAndSearch(filterByGroup(state.selections));
+  const stats = computeStats(filtered);
+
+  appEl.innerHTML = `
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Estatisticas do Album</h2>
+        <button class="btn-ghost" id="back-home">Voltar</button>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="text-sm text-slate-600">Figurinhas unicas</div>
+          <div class="text-3xl font-semibold">${stats.unique}</div>
+        </div>
+        <div class="card">
+          <div class="text-sm text-slate-600">Figurinhas repetidas</div>
+          <div class="text-3xl font-semibold">${stats.repeated}</div>
+        </div>
+        <div class="card">
+          <div class="text-sm text-slate-600">Total do album</div>
+          <div class="text-3xl font-semibold">${stats.total}</div>
+        </div>
+        <div class="card">
+          <div class="text-sm text-slate-600">Completo</div>
+          <div class="text-3xl font-semibold">${stats.percent}%</div>
+        </div>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("back-home").addEventListener("click", () => {
+    state.view = "home";
+    render();
+  });
+}
+
 function renderHome() {
   const filtered = filterByAlphaAndSearch(filterByGroup(state.selections));
 
@@ -636,6 +682,11 @@ function render() {
 
   if (state.view === "repeated") {
     renderListView("repeated");
+    return;
+  }
+
+  if (state.view === "stats") {
+    renderStats();
     return;
   }
 

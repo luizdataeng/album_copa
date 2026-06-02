@@ -388,7 +388,7 @@ function renderSelection() {
         ${stickerHtml}
       </div>
       <p class="mt-4 text-sm text-slate-600">
-        Toque rapido soma 1. Toque longo remove 1.
+        Clique rapido soma 1. Dois cliques remove 1.
       </p>
     </section>
   `;
@@ -399,33 +399,28 @@ function renderSelection() {
   });
 
   document.querySelectorAll("[data-number]").forEach((button) => {
-    let holdTimer = null;
-    let didHold = false;
+    let clickTimer = null;
+    let lastClickAt = 0;
 
-    const onHold = () => {
-      didHold = true;
-      updateSticker(selection.name, Number(button.dataset.number), -1);
-    };
+    button.addEventListener("click", () => {
+      const now = Date.now();
+      const number = Number(button.dataset.number);
 
-    button.addEventListener("pointerdown", () => {
-      didHold = false;
-      holdTimer = setTimeout(onHold, HOLD_MS);
-    });
-
-    const release = () => {
-      if (holdTimer) clearTimeout(holdTimer);
-      if (!didHold) {
-        updateSticker(selection.name, Number(button.dataset.number), 1);
+      if (now - lastClickAt <= 300) {
+        if (clickTimer) {
+          clearTimeout(clickTimer);
+          clickTimer = null;
+        }
+        lastClickAt = 0;
+        updateSticker(selection.name, number, -1);
+        return;
       }
-      holdTimer = null;
-    };
 
-    button.addEventListener("pointerup", release);
-    button.addEventListener("pointerleave", () => {
-      if (holdTimer) clearTimeout(holdTimer);
-    });
-    button.addEventListener("pointercancel", () => {
-      if (holdTimer) clearTimeout(holdTimer);
+      lastClickAt = now;
+      clickTimer = setTimeout(() => {
+        updateSticker(selection.name, number, 1);
+        clickTimer = null;
+      }, 300);
     });
   });
 }

@@ -2,6 +2,8 @@ from pathlib import Path
 
 import os
 
+from dotenv import load_dotenv
+
 from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -12,6 +14,7 @@ from . import db
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
+load_dotenv(BASE_DIR.parent / ".env", override=True)
 
 app = FastAPI(title="PWA Album Sticker Tracker")
 
@@ -60,7 +63,7 @@ def get_album() -> dict:
     return {"selections": db.fetch_album()}
 
 
-def require_admin_token(admin_token: str | None = Header(default=None, alias="X-ADMIN-TOKEN")) -> None:
+def require_admin_token(admin_token: str | None) -> None:
     expected = os.getenv("ADMIN_TOKEN")
     if not expected:
         raise HTTPException(
@@ -75,8 +78,11 @@ def require_admin_token(admin_token: str | None = Header(default=None, alias="X-
 
 
 @app.post("/atualizar")
-def update_sticker(payload: UpdatePayload) -> dict:
-    require_admin_token()
+def update_sticker(
+    payload: UpdatePayload,
+    admin_token: str | None = Header(default=None, alias="X-ADMIN-TOKEN"),
+) -> dict:
+    require_admin_token(admin_token)
     try:
         quantity = db.update_quantity(payload.selecao, payload.numero, payload.delta)
     except ValueError as exc:
@@ -90,8 +96,11 @@ def update_sticker(payload: UpdatePayload) -> dict:
 
 
 @app.post("/selecoes/nova")
-def create_selection(payload: NewSelectionPayload) -> dict:
-    require_admin_token()
+def create_selection(
+    payload: NewSelectionPayload,
+    admin_token: str | None = Header(default=None, alias="X-ADMIN-TOKEN"),
+) -> dict:
+    require_admin_token(admin_token)
     group = payload.group or "Custom"
     changes = db.create_selection(payload.name, group)
     if changes == 0:
